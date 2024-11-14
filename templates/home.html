@@ -1,0 +1,273 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container d-flex justify-content-center align-items-center h-100">
+  <div
+    class="d-flex text-box-container align-items-center"
+    style="position: relative; z-index: 2; height: 300px"
+  >
+    <div class="text-center text-white">
+      <h1 class="mb-4 display-2 animate__animated animate__fadeInDown">
+        <strong>
+          <span class="typewriter" data-text="Hi, I am Samvid!"></span>
+        </strong>
+      </h1>
+      <h5
+        class="mb-5 display-5 animate__animated animate__fadeInDown"
+        style="animation-delay: 0.5s"
+      >
+        <span
+          data-text="Welcome to India's first Constitution Museum."
+          class="typewriter"
+        ></span>
+      </h5>
+      <div class="mt-5">
+        <a
+          class="btn btn-lg action-btn me-3"
+          id="startTourButton"
+          role="button"
+          href="#"
+          data-mdb-ripple-init
+          style="opacity: 0"
+        >
+          <strong>Start Tour</strong>
+        </a>
+        <a
+          class="btn btn-lg action-btn"
+          href="{{ url_for('exhibits') }}"
+          role="button"
+          data-mdb-ripple-init
+          style="opacity: 0"
+        >
+          <strong>Explore Museum</strong>
+        </a>
+      </div>
+    </div>
+
+    <!-- Robot Animation -->
+    <div class="robot-animation justify-content-center">
+      <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+      <lottie-player
+        src="https://lottie.host/7223d248-bdb2-492e-951f-565c6301be9b/x3YBLonBH0.json"
+        speed="1"
+        style="width: 500px; height: 500px"
+        loop
+        autoplay
+        direction="1"
+        mode="normal"
+      ></lottie-player>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="tourModal" class="modal">
+  <div class="modal-content" id="content">
+    <span class="close-button">&times;</span>
+    <h2>Welcome to the Museum of Rights and Freedom Tour!</h2>
+    <p>
+      Hello! I’m Samvid, your robotic tour guide. I’ll be with you every step of
+      the way as we explore this museum dedicated to human rights, freedom, and
+      the powerful stories that shaped our world. Before we start, let me share
+      some tips to make your experience smoother:
+    </p>
+    <ul>
+      <li>
+        <strong>Ask clear and direct questions</strong> – I’ll be able to
+        provide the best answers that way.
+      </li>
+      <li>
+        <strong>Speak clearly and loud enough</strong> so I can understand you
+        without any trouble.
+      </li>
+      <li>
+        <strong>Give me a moment to answer</strong> – I’ll do my best to keep
+        the flow, so please avoid interrupting.
+      </li>
+      <li>
+        <strong>Check my responses</strong> – While I strive to be accurate,
+        some details might require a quick second glance. It’s always good to
+        verify!
+      </li>
+    </ul>
+    <p>
+      Ready to begin? Let’s dive into the inspiring stories of freedom and human
+      rights. Click below to start the tour!
+    </p>
+    <button id="startButton" class="btn btn-success">
+      Let's begin the journey!
+    </button>
+  </div>
+</div>
+
+<!-- JavaScript for typewriter effect and buttons floating in -->
+<script>
+  function typeWriter(element, text, i, callback) {
+    if (i < text.length) {
+      element.innerHTML =
+        text.substring(0, i + 1) + '<span aria-hidden="true"></span>';
+      setTimeout(function () {
+        typeWriter(element, text, i + 1, callback);
+      }, 100);
+    } else if (callback) {
+      element.querySelector("span").style.display = "none";
+      setTimeout(callback, 100);
+    }
+  }
+
+  function floatInButtons() {
+    var buttons = document.querySelectorAll(".action-btn");
+    buttons.forEach(function (button, index) {
+      setTimeout(function () {
+        button.style.opacity = 1;
+        button.style.transform = "translateY(0)";
+        button.classList.add("animate__animated", "animate__bounceIn");
+      }, 200);
+    });
+  }
+
+  function showRobotAnimation() {
+    var robot = document.querySelector(".robot-animation");
+    setTimeout(function () {
+      robot.classList.add("visible"); // Add the visible class to trigger the CSS transitions
+    }, 0);
+  }
+
+  function startTextAnimation() {
+    var elements = document.querySelectorAll(".typewriter");
+    if (elements.length >= 2) {
+      typeWriter(
+        elements[0],
+        elements[0].getAttribute("data-text"),
+        0,
+        function () {
+          typeWriter(
+            elements[1],
+            elements[1].getAttribute("data-text"),
+            0,
+            function () {
+              floatInButtons();
+            }
+          );
+        }
+      );
+    }
+  }
+
+  window.onload = function () {
+    startTextAnimation();
+    showRobotAnimation();
+  };
+  document
+    .getElementById("startTourButton")
+    .addEventListener("click", function (event) {
+      event.preventDefault(); // Prevent the default anchor behavior
+      document.getElementById("tourModal").style.display = "block"; // Show the modal
+      // play intro audio
+      const audio = new Audio(
+        "{{ url_for('static', filename='audio/intro.mp3') }}"
+      );
+
+      audio.play();
+    });
+
+  document
+    .querySelector(".close-button")
+    .addEventListener("click", function () {
+      document.getElementById("tourModal").style.display = "none"; // Hide the modal
+    });
+  const startButton = document.getElementById("startButton");
+  startButton.addEventListener("click", function () {
+    document.getElementById("tourModal").style.display = "none"; // Hide the modal
+    window.location.href = "{{ url_for('tour', current_id=1) }}"; // Redirect to the tour page
+  });
+  // Close the modal if the user clicks outside of it
+  window.addEventListener("click", function (event) {
+    const modal = document.getElementById("tourModal");
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+</script>
+
+<style>
+  .video-background {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+  }
+
+  .robot-animation {
+    opacity: 0;
+    transform: translateX(100%); /* Start off-screen to the right */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition */
+  }
+
+  .robot-animation.visible {
+    opacity: 1; /* Fade in */
+    transform: translateX(0); /* Slide in */
+  }
+
+  .action-btn {
+    background: linear-gradient(
+      90deg,
+      #0099ff,
+      #2f4d5f
+    ); /* Gradient background */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 30px; /* Rounded corners */
+    padding: 15px 30px; /* Padding */
+    font-size: 1.5rem; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    transition: all 0.3s ease; /* Smooth transitions */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+
+  .action-btn:active {
+    transform: translateY(2px); /* Pressed effect */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+  }
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    border: 1px solid #888;
+    width: 50%;
+  }
+
+  .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close-button:hover,
+  .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+{% endblock %}

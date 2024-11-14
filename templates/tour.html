@@ -1,0 +1,264 @@
+{% extends "base.html" %} {% block content %}
+<div
+  id="exhibit-container"
+  class="d-flex justify-content-center align-items-center mt-3"
+>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="exhibit-image">
+        <img
+          src="{{ exhibit.image }}"
+          alt="{{ exhibit.exhibit_name }}"
+          class="img-fluid rounded shadow"
+        />
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <h2 class="exhibit-title text-primary">{{ exhibit.exhibit_name }}</h2>
+      <p class="exhibit-short-description text-secondary">
+        {{ exhibit.short_description }}
+      </p>
+      <div class="exhibit-long-description mt-3">
+        <h5 class="text-dark">Description:</h5>
+        <p>{{ exhibit.long_description }}</p>
+        <p>{{ exhibit.additional_info }}</p>
+      </div>
+      <div id="button-grp" class="mt-3">
+        {% if prev_id %}
+        <a href="{{ url_for('tour', current_id=prev_id) }}" id="normal-button"
+          >Previous</a
+        >
+        {% endif %} {% if next_id %}
+        <a href="{{ url_for('tour', current_id=next_id) }}" id="normal-button"
+          >Next</a
+        >
+        {% endif %}
+        <!-- Trigger the modal if there is no next exhibit -->
+        <button id="normal-button" onclick="showThankYouModal()">Quit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="question-prompt" class="question-prompt">
+  <p>Do you have any questions? Please answer "Yes I do" or "No I don't".</p>
+</div>
+
+<div id="tourModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <h2>Thank you for attending!</h2>
+    <p>
+      We hope you enjoyed the tour. Please take a moment to provide feedback.
+    </p>
+  </div>
+</div>
+
+<script>
+  let exhibitAudio; // Global variable to hold the exhibit audio
+
+  // Function to play the exhibit's prerecorded audio
+  function playExhibitAudio() {
+    exhibitAudio = new Audio(
+      `{{ url_for('static', filename='audio/exhibit_' + exhibit.id + '.wav') }}`
+    );
+
+    exhibitAudio.play(); // Start playing the exhibit audio
+
+    // Stop audio when navigating away (next/prev/quit)
+    document.querySelectorAll("#normal-button").forEach((button) => {
+      button.addEventListener("click", () => exhibitAudio.pause());
+    });
+
+    // When the exhibit audio ends, show the question prompt
+    exhibitAudio.onended = () => {
+      showQuestionPrompt();
+      playQuestionPromptAudio();
+    };
+  }
+
+  // Function to play the question prompt audio
+  function playQuestionPromptAudio() {
+    const questionAudio = new Audio(
+      `{{ url_for('static', filename='audio/question_audio.wav') }}`
+    );
+
+    questionAudio.play();
+
+    // When the question audio ends, start wake word detection
+    questionAudio.onended = () => {
+      detectWakeWord();
+    };
+  }
+
+  function showQuestionPrompt() {
+    const questionPrompt = document.getElementById("question-prompt");
+    questionPrompt.style.display = "block"; // Show the question prompt
+  }
+
+  // function stt() {
+  //   fetch('/stt',{
+  //     method:"GET"
+  //   })
+  // }
+  let count = 0;
+
+  function detectWakeWord() {
+    fetch("/detect_wake_word", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ page: "tour" }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.action === "chatbot") {
+          window.location.href = "/chatbot?start_stt=true";// Redirect to chatbot
+          // setTimeout(stt,0)
+        } else if (data.action === "next_exhibit") {
+        // Play "lets_move_on.wav" and move to the next exhibit
+          const moveOnAudio = new Audio("{{ url_for('static', filename='audio/lets_move_on.wav') }}");
+          moveOnAudio.play();
+          moveOnAudio.play();
+          setTimeout(() => {
+            const nextId = "{{ next_id }}"; // Pass next exhibit ID
+            if (nextId) {
+              window.location.href = `/tour/${nextId}`;
+            } else {
+              console.log("No more exhibits.");
+            }
+          }, 3000);
+          
+        } else {
+          console.error("No wake word detected or another action was triggered.");
+
+          if (count === 2) {
+            // If count is 2, play "looks_like_no_questions.wav" and move to the next exhibit
+            const noQuestionsAudio = new Audio("{{ url_for('static', filename='audio/looks_like_no_questions.wav') }}");
+            noQuestionsAudio.play();
+            setTimeout(() => {
+              const nextId = "{{ next_id }}"; // Pass next exhibit ID
+              if (nextId) {
+                window.location.href = `/tour/${nextId}`;
+              } else {
+                console.log("No more exhibits.");
+              }
+            }, 3000); // Redirect to the next exhibit page
+
+          } else {
+            // Play the "question audio" if no wake word detected on the first attempt
+            const questionAudio = new Audio("{{ url_for('static', filename='audio/question_audio.wav') }}");
+            questionAudio.play();
+            count = 2; // Set count to 2
+
+            // When the question audio ends, start wake word detection again
+            questionAudio.onended = () => {
+              detectWakeWord(); 
+            };
+          }
+        }
+      })
+      .catch((error) => console.error("Error detecting wake word:", error));
+  }
+
+  // Function to handle "no" response and move to the next exhibit
+
+  function showThankYouModal() {
+    event.preventDefault(); // Prevent the default anchor behavior
+    document.getElementById("tourModal").style.display = "block"; // Show the modal
+    setTimeout(function () {
+      window.location.href = "/"; // Redirect to home after 8 seconds
+    }, 8000); // Adjust the time as needed
+  }
+
+  window.onload = function () {
+    playExhibitAudio(); // Start playing the exhibit audio when the page loads
+  };
+</script>
+
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .tour-container {
+    z-index: 1000;
+    background: #000;
+  }
+
+  #exhibit-container {
+    width: 80%;
+    height: 90%;
+    margin: 0 auto;
+    background-color: hsla(0, 0%, 100%, 0.8);
+    border-radius: 15px;
+    padding: 50px;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+  }
+
+  .exhibit-image img {
+    border-radius: 15px;
+    transition: transform 0.3s;
+  }
+
+  .exhibit-title {
+    font-size: 2.5rem;
+    color: #0f1011;
+  }
+
+  .exhibit-short-description {
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .exhibit-long-description p,
+  .exhibit-additional-info p {
+    line-height: 1.6;
+  }
+
+  .exhibit-additional-info {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+  }
+
+  #button-grp {
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+  }
+
+  .question-prompt {
+    position: fixed;
+    bottom: 100px; /* Adjusted for better visibility */
+    right: 20px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    display: none; /* Initially hidden */
+    z-index: 1000; /* Ensure it's above other content */
+  }
+</style>
+
+{% endblock %}

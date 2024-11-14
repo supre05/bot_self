@@ -1,0 +1,136 @@
+{% extends 'base.html' %} {% block content %}
+<!-- Swiper styles -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+
+<style>
+  #carousel-container {
+    width: 90%;
+    height: 90%;
+    overflow: hidden;
+    margin: 0 auto;
+    background-color: hsla(0, 0%, 100%, 0);
+    padding-top: 50px;
+    padding-bottom: 50px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    position: relative; /* Ensure buttons are positioned relative to the container */
+  }
+
+  .swiper {
+    width: 98%;
+    height: 98%;
+  }
+
+  .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    background-color: #f7efef;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    padding: auto;
+    transition: all 0.3s ease, opacity 0.5s;
+  }
+
+  .swiper-slide img {
+    width: 95%;
+    max-height: 500px;
+    margin-top: 10px;
+    border-radius: 15px;
+    object-fit: cover;
+  }
+
+  .name {
+    margin: 10px 0 5px;
+    color: #00bfff;
+    font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
+  }
+
+  .description {
+    font-style: italic;
+    margin-bottom: 10px;
+    color: #a1a1a1;
+    text-align: center;
+  }
+
+  /* Swiper navigation buttons */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #00bfff; /* Custom color for navigation buttons */
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    color: #007bff;
+  }
+</style>
+
+<div
+  id="carousel-container"
+  class="d-flex justify-content-center align-items-center mt-3"
+>
+  <!-- Swiper -->
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      {% for exhibit in exhibits %}
+      <div class="swiper-slide">
+        <img src="{{ exhibit.image }}" alt="{{ exhibit.title }}" />
+        <h3 class="name">{{ exhibit.exhibit_name }}</h3>
+        <p class="description">{{ exhibit.short_description }}</p>
+        <button
+          id="normal-button"
+          class="read-more mb-3"
+          onclick="window.location.href='/exhibit/{{ exhibit.id }}'"
+        >
+          Read More
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="swiper-pagination mt-5"></div>
+
+    <!-- Navigation buttons -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+</div>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- Initialize Swiper -->
+<script>
+  var swiper = new Swiper(".mySwiper", {
+    effect: "coverflow",
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: "auto",
+    coverflowEffect: {
+      rotate: 50,
+      stretch: 0,
+      depth: 100,
+      modifier: 1,
+      slideShadows: true,
+      scale: 0.5,
+    },
+    pagination: {
+      el: ".swiper-pagination",
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+</script>
+{% endblock %}

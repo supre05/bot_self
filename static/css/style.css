@@ -1,0 +1,19 @@
+#normal-button {
+    background: linear-gradient(180deg, #0099ff, #2f4d5f);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px; /* Adjust padding */
+    font-size: 1.2rem; /* Consistent font size */
+    line-height: normal; /* Ensure line height is normal */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: inline-block; /* Control the display */
+    vertical-align: middle; /* Adjust vertical alignment */
+  }
+  
+      #normal-button:active {
+        transform: translateY(2px); /* Pressed effect */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+      }

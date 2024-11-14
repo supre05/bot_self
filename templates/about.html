@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block content %}
+<div class="container my-5 p-4 shadow-sm rounded mt-5">
+  <h1 class="text-center mb-4 text-primary">About Us</h1>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="text-secondary">Our Mission</h2>
+      <p>
+        We strive to push the boundaries of innovation in robotics. Our mission
+        is to create solutions that enhance the lives of individuals and
+        communities, utilizing cutting-edge technology and a collaborative
+        approach.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="text-secondary">Our Vision</h2>
+      <p>
+        Our vision is to be a leader in the field of robotics, recognized for
+        our commitment to quality, creativity, and impactful solutions. We aim
+        to inspire the next generation of engineers and innovators through our
+        projects and outreach initiatives.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h2 class="text-secondary">Our Team</h2>
+      <p>
+        We are a group of passionate students from IIT Madras, dedicated to
+        exploring the fascinating world of robotics. Our team members include:
+      </p>
+      <ul>
+        <li>
+          <strong>Aadarsh</strong>: Robotics enthusiast with a knack for
+          programming and AI.
+        </li>
+        <li>
+          <strong>Ishita</strong>: Mechanical engineering student focused on
+          design and prototyping.
+        </li>
+        <li>
+          <strong>Divya</strong>: Electronics expert, specializing in sensors
+          and control systems.
+        </li>
+        <li>
+          <strong>Shreshto</strong>: Project manager with a passion for teamwork
+          and project execution.
+        </li>
+      </ul>
+      <p>
+        Together, we bring diverse skills and a shared vision to tackle complex
+        challenges in robotics.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <h2 class="text-secondary">Contact Us</h2>
+      <p>
+        If you have any questions or would like to learn more about our
+        projects, feel free to
+        <a href="contact.html" class="text-primary">contact us</a>. We look
+        forward to hearing from you!
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .container {
+    width: 80%;
+    max-width: 1200px;
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    z-index: 3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  h2 {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+  p {
+    line-height: 1.6;
+  }
+  .text-primary {
+    color: #007bff;
+  }
+  .text-secondary {
+    color: #6c757d;
+  }
+</style>
+{% endblock %}

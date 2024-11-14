@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block content %}
+<div
+  id="exhibit-container"
+  class="d-flex justify-content-center align-items-center mt-3"
+>
+  <div class="row">
+    <div class="col-lg-6">
+      <div class="exhibit-image">
+        <img
+          src=" {{ exhibit.image }}"
+          alt=" {{ exhibit.exhibit_name }}"
+          class="img-fluid rounded shadow"
+        />
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <h2 class="exhibit-title text-primary">{{ exhibit.exhibit_name }}</h2>
+      <p class="exhibit-short-description text-secondary">
+        {{ exhibit.short_description }}
+      </p>
+      <div class="exhibit-long-description mt-3">
+        <h5 class="text-dark">Description:</h5>
+        <p>{{ exhibit.long_description }}</p>
+      </div>
+      <div class="exhibit-additional-info mt-3">
+        <h5 class="text-dark">Additional Information:</h5>
+        <p>{{ exhibit.additional_info }}</p>
+      </div>
+      <div id="button" class="mt-3">
+        <a href="/exhibits" id="normal-button" style="background-color: #007bff"
+          >Back</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #exhibit-container {
+    width: 80%;
+    height: 90%;
+    margin: 0 auto;
+    background-color: hsla(0, 0%, 100%, 0.8);
+    border-radius: 15px;
+
+    padding: 50px;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+  }
+
+  .exhibit-image img {
+    border-radius: 15px;
+    transition: transform 0.3s;
+  }
+
+  .exhibit-title {
+    font-size: 2.5rem;
+    color: #0f1011;
+  }
+
+  .exhibit-short-description {
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .exhibit-long-description p,
+  .exhibit-additional-info p {
+    line-height: 1.6;
+  }
+
+  .exhibit-additional-info {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+  }
+  #button {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+  }
+</style>
+{% endblock %}

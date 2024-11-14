@@ -1,0 +1,6 @@
+cancel chat audio and output text when required.
+audio playing from old file fix
+
+on reload audio stopped. in tour. prolly linked with previus guy instead of current. fix
+
+chatbot audio fix ckardo
