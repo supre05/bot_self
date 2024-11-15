@@ -18,6 +18,7 @@ def record_audio():
         energy_threshold = recognizer.energy_threshold
         silence_threshold = 0.5 * energy_threshold
         print(silence_threshold)
+        # Initialize variables
         audio = None
         silence_start = None
         started_speaking = False

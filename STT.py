@@ -7,6 +7,7 @@ import os
 import requests
 from pydub import AudioSegment
 from pydub.utils import make_chunks
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from dotenv import load_dotenv
 
@@ -23,7 +24,7 @@ headers = {"api-subscription-key": api_key}
 def stt_model(audio_bytes): # API endpoint
     files = {'file': ('audio.wav', audio_bytes, 'audio/wav')}
     try:
-        response = requests.post(url, files = files, headers=headers, timeout = 60) # Timeout at 60 sec
+        response = requests.post(url, files = files, headers=headers, timeout = 20) # Timeout at 60 sec
         response.raise_for_status()
 
         result = response.json()
@@ -39,7 +40,8 @@ def stt_model(audio_bytes): # API endpoint
         return ""
 
 # Process chunkwise for speed
-def process_audio(audio_data, sample_rate, sample_width, chunk_length_ms = 10000):
+
+def chunk_audio(audio_data, sample_rate, sample_width, chunk_length_ms = 10000):
     # Process audio data in chunks and concatenate transcriptions into a single string.
     audio = AudioSegment(
         data = audio_data.get_raw_data(),
@@ -49,22 +51,34 @@ def process_audio(audio_data, sample_rate, sample_width, chunk_length_ms = 10000
     )
 
     # Split audio into chunks
-    chunks = make_chunks(audio, chunk_length_ms)
-    transcriptions = []
+    return make_chunks(audio, chunk_length_ms)
 
-    for chunk in chunks:
-        # Check for non-silent chunks based on dBFS level
-        if chunk.dBFS > -50:  # Adjust silence threshold if needed
-            with BytesIO() as chunk_bytes:
-                chunk.export(chunk_bytes, format="wav")
-                chunk_bytes.seek(0)
-                transcription = stt_model(chunk_bytes)
-                if transcription:
-                    transcriptions.append(transcription)
+def transcribe_chunk(chunk):
+    with BytesIO() as chunk_bytes:
+        chunk.export(chunk_bytes, format="wav")
+        chunk_bytes.seek(0)
+        return stt_model(chunk_bytes)
+    
 
-    # Join all transcriptions into a single text string
-    final_transcription = " ".join(transcriptions)
-    return final_transcription 
+def process_audio(audio_data, sample_rate, sample_width, chunk_length_ms = 10000):
+    # Split audio into chunks
+    chunks = chunk_audio(audio_data, sample_rate, sample_width, chunk_length_ms)
+    transcriptions = [None] * len(chunks)
+
+    # Use ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=os.cpu_count()) as executor:
+        # Submit tasks to threads
+        futures = {executor.submit(transcribe_chunk, chunk): idx for idx, chunk in enumerate(chunks) if chunk.dBFS > -50}
+
+        # Process completed futures as they finish
+        for future in as_completed(futures):
+            idx = futures[future]
+            transcription = future.result()
+            if transcription:  # Only add non-empty transcriptions
+                transcriptions[idx] = transcription
+
+    # Combine all transcriptions into a single string
+    return " ".join(transcriptions)
 
 if __name__ == "__main__":  
     # Debug 

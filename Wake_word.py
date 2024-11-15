@@ -19,8 +19,8 @@ def wake_word_callback_hey_some_vid():
 # Function to listen for either "yes" or "no" wake words
 def listen_for_wake_word(timeout=10):
     ACCESS_KEY = 'N2iMLFMol4aHYjGCRGicsI5ekoMllYCSkGjsBQeNSiXPUih/GX+28w=='
-    KEYWORD_FILE_PATH_YES = r"/home/cool_goggles/Samvid/InnoGuide_GPT/Interface/yes-i-do_en_linux_v3_0_0 (1)/yes-i-do_en_linux_v3_0_0.ppn"
-    KEYWORD_FILE_PATH_NO = r"/home/cool_goggles/Samvid/InnoGuide_GPT/Interface/no-i-dont_en_linux_v3_0_0 (1)/no-i-dont_en_linux_v3_0_0.ppn"
+    KEYWORD_FILE_PATH_YES = r"/home/cool_goggles/Samvid_final/Interface/yes-i-do_en_linux_v3_0_0 (1)/yes-i-do_en_linux_v3_0_0.ppn"
+    KEYWORD_FILE_PATH_NO = r"/home/cool_goggles/Samvid_final/Interface/no-i-dont_en_linux_v3_0_0 (1)/no-i-dont_en_linux_v3_0_0.ppn"
     # Initialize Porcupine with both "yes" and "no" wake words
     porcupine = pvporcupine.create(access_key=ACCESS_KEY, keyword_paths=[KEYWORD_FILE_PATH_YES, KEYWORD_FILE_PATH_NO])
 
@@ -70,7 +70,7 @@ def listen_for_wake_word(timeout=10):
 
 def listen_wake_word_hey_some_vid(timeout=20):
     ACCESS_KEY = 'N2iMLFMol4aHYjGCRGicsI5ekoMllYCSkGjsBQeNSiXPUih/GX+28w=='
-    KEYWORD_FILE_PATH_HEY_SOME_VID=r"/home/cool_goggles/Samvid/InnoGuide_GPT/Interface/hey-some-vid_en_linux_v3_0_0/hey-some-vid_en_linux_v3_0_0.ppn"
+    KEYWORD_FILE_PATH_HEY_SOME_VID=r"/home/cool_goggles/Samvid_final/Interface/hey-some-vid_en_linux_v3_0_0/hey-some-vid_en_linux_v3_0_0.ppn"
     # Initialize Porcupine with both "yes" and "no" wake words
     porcupine = pvporcupine.create(access_key=ACCESS_KEY, keyword_paths=[KEYWORD_FILE_PATH_HEY_SOME_VID])
 
